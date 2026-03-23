@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maison du Four | Restaurateur</title>
+    <link rel="icon" type="image/jpeg" href="https://nur1f.github.io/Maison-du-four-villepinte/onglet.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #110d0b;
+            --panel: rgba(33, 23, 16, 0.82);
+            --panel-strong: rgba(47, 31, 20, 0.95);
+            --panel-light: rgba(255, 247, 239, 0.06);
+            --line: rgba(244, 198, 141, 0.16);
+            --line-strong: rgba(244, 198, 141, 0.3);
+            --text: #f7ead9;
+            --muted: #cdb49c;
+            --gold: #efb55b;
+            --gold-soft: #ffd79a;
+            --red: #cb4123;
+            --red-deep: #9f2d16;
+            --green: #2d7a52;
+            --shadow: 0 22px 60px rgba(0,0,0,0.38);
+            --serif: "Cormorant Garamond", Georgia, serif;
+            --sans: "Manrope", Arial, sans-serif;
+            --radius-xl: 28px;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+        }
+        *, *::before, *::after { box-sizing: border-box; }
+        html { scroll-behavior: smooth; background: var(--bg); }
+        body {
+            margin: 0; font-family: var(--sans); color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(255,180,74,0.07), transparent 28%),
+                linear-gradient(180deg, rgba(12,8,6,0.78), rgba(12,8,6,0.94)), #100c09;
+            min-height: 100vh; overflow-x: hidden; position: relative;
+        }
+        body::before {
+            content: ""; position: fixed; inset: 0;
+            background: url("https://nur1f.github.io/Maison-du-four-villepinte/fondf.png") center/cover no-repeat;
+            opacity: 0.15; pointer-events: none; z-index: -2;
+        }
+        body::after {
+            content: ""; position: fixed; inset: 0;
+            background: linear-gradient(180deg,rgba(10,8,7,0.08),rgba(10,8,7,0.42)),
+                radial-gradient(circle at 85% 20%,rgba(239,181,91,0.05),transparent 25%);
+            pointer-events: none; z-index: -1;
+        }
+        img { display: block; max-width: 100%; }
+        a { color: inherit; text-decoration: none; }
+        button { font: inherit; }
+        h1,h2,h3,p { margin-top: 0; }
+        .container { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
+
+        /* HEADER */
+        .site-header { position: sticky; top: 0; z-index: 200; border-bottom: 1px solid var(--line); background: rgba(16,12,9,0.82); backdrop-filter: blur(14px); }
+        .site-header-inner { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 0; }
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand-mark { width: 48px; height: 48px; flex-shrink: 0; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,215,154,0.25); background: rgba(0,0,0,0.35); }
+        .brand-mark img { width: 100%; height: 100%; object-fit: contain; }
+        .brand-kicker { font-size: 9px; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 2px; }
+        .brand-name { font-family: var(--serif); font-size: clamp(20px,2.3vw,28px); font-weight: 700; line-height: 0.95; color: #fff7ef; }
+        .brand-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+        .header-phone { display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 10px 16px; background: linear-gradient(135deg,var(--red),var(--red-deep)); color: white; font-weight: 800; font-size: 13px; white-space: nowrap; box-shadow: 0 10px 24px rgba(203,65,35,0.24); transition: transform 0.2s; }
+        .header-phone:hover { transform: translateY(-2px); }
+
+        .banner { width: 100%; max-height: 240px; overflow: hidden; border-bottom: 1px solid var(--line); }
+        .banner img { width: 100%; object-fit: cover; object-position: center 40%; max-height: 240px; }
+
+        .page-content { padding: 28px 0 60px; }
+
+        .section-tag { display: inline-flex; align-items: center; gap: 8px; width: fit-content; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel-light); font-size: 10px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold-soft); margin-bottom: 14px; }
+
+        /* TOPBAR */
+        .admin-topbar { display: flex; justify-content: space-between; align-items: center; gap: 18px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-xl); padding: 28px; margin-bottom: 20px; box-shadow: var(--shadow); }
+        .admin-topbar h1 { font-family: var(--serif); font-size: clamp(26px,3.5vw,44px); font-weight: 700; color: #fff7ef; margin: 10px 0 8px; }
+        .admin-topbar p { color: var(--muted); font-size: 14px; line-height: 1.6; margin: 0; max-width: 50ch; }
+
+        .btn-refresh { display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 12px 20px; border: none; background: linear-gradient(135deg,var(--red),var(--red-deep)); color: white; font-weight: 800; font-size: 14px; cursor: pointer; box-shadow: 0 10px 24px rgba(203,65,35,0.24); transition: transform 0.2s; white-space: nowrap; }
+        .btn-refresh:hover { transform: translateY(-2px); }
+
+        /* KPI */
+        .kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 22px; }
+        .kpi-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 20px; }
+        .kpi-number { display: block; font-family: var(--serif); font-size: 36px; font-weight: 700; color: var(--gold-soft); }
+        .kpi-label { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+
+        /* ORDERS */
+        .orders-grid { display: grid; gap: 16px; }
+        .order-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-xl); padding: 24px; box-shadow: var(--shadow); }
+        .order-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 14px; }
+        .order-head h3 { font-family: var(--serif); font-size: 22px; font-weight: 700; color: #fff7ef; margin: 0 0 4px; }
+        .order-head p { color: var(--muted); font-size: 13px; margin: 0; }
+
+        .status-pill { display: inline-flex; align-items: center; justify-content: center; padding: 6px 14px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; flex-shrink: 0; }
+        .status-pill.nouvelle { background: rgba(239,181,91,0.15); color: var(--gold-soft); border: 1px solid rgba(239,181,91,0.3); }
+        .status-pill.prete, .status-pill.terminee { background: rgba(45,122,82,0.18); color: #73db9a; border: 1px solid rgba(45,122,82,0.3); }
+        .status-pill.annulee { background: rgba(160,58,44,0.14); color: #f48070; border: 1px solid rgba(160,58,44,0.3); }
+
+        .order-info { font-size: 13px; color: var(--muted); line-height: 1.8; margin-bottom: 14px; }
+        .order-info strong { color: var(--text); }
+
+        .order-items { display: grid; gap: 8px; margin-bottom: 14px; }
+        .order-item { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 14px; border-radius: var(--radius-md); background: rgba(255,247,239,0.04); border: 1px solid var(--line); }
+        .order-item-name { font-size: 14px; font-weight: 700; color: var(--text); }
+        .order-item-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+        .order-item-price { color: var(--gold); font-weight: 800; font-size: 14px; white-space: nowrap; }
+
+        .order-total { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--line); margin-bottom: 16px; }
+        .order-total-label { color: var(--muted); font-size: 13px; }
+        .order-total-value { color: var(--gold-soft); font-size: 22px; font-weight: 800; font-family: var(--serif); }
+
+        .status-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+        .status-btn { padding: 8px 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel-light); color: var(--muted); font-weight: 700; font-size: 13px; cursor: pointer; transition: background 0.2s, color 0.2s, border-color 0.2s; }
+        .status-btn:hover { border-color: var(--line-strong); color: var(--text); }
+        .status-btn.is-active { background: linear-gradient(135deg,var(--red),var(--red-deep)); border-color: transparent; color: white; box-shadow: 0 6px 16px rgba(203,65,35,0.22); }
+        .status-btn.btn-delete { border-color: rgba(160,58,44,0.3); color: #f48070; }
+        .status-btn.btn-delete:hover { background: rgba(160,58,44,0.14); }
+
+        .empty-state { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-xl); padding: 50px; text-align: center; }
+        .empty-state h2 { font-family: var(--serif); font-size: 28px; color: #fff7ef; margin-bottom: 10px; }
+        .empty-state p { color: var(--muted); }
+
+        .error-msg { background: rgba(160,58,44,0.12); border: 1px solid rgba(160,58,44,0.3); border-radius: var(--radius-lg); padding: 18px 22px; color: #f48070; font-weight: 700; font-size: 14px; }
+        code { background: rgba(255,247,239,0.08); padding: 2px 6px; border-radius: 6px; font-size: 13px; }
+
+        /* LOGIN */
+        .login-screen { position: fixed; inset: 0; z-index: 999; background: rgba(10,7,5,0.98); display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .login-screen.hidden { display: none; }
+        .login-box { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-xl); padding: 36px; width: min(400px,100%); text-align: center; box-shadow: var(--shadow); }
+        .login-box img { width: 80px; margin: 0 auto 16px; border-radius: 18px; }
+        .login-box h2 { font-family: var(--serif); font-size: 32px; color: #fff7ef; margin: 0 0 6px; }
+        .login-box p { color: var(--muted); font-size: 14px; margin: 0 0 24px; }
+        .login-input { width: 100%; padding: 14px 16px; border-radius: var(--radius-md); border: 1px solid var(--line); background: rgba(255,247,239,0.06); color: var(--text); font: inherit; font-size: 15px; outline: none; text-align: center; letter-spacing: 0.2em; transition: border-color 0.2s; margin-bottom: 12px; }
+        .login-input:focus { border-color: var(--gold); }
+        .login-btn { width: 100%; padding: 14px; border-radius: 999px; border: none; background: linear-gradient(135deg,var(--red),var(--red-deep)); color: white; font-weight: 800; font-size: 15px; cursor: pointer; font-family: var(--sans); transition: transform 0.2s; }
+        .login-btn:hover { transform: translateY(-2px); }
+        .login-error { color: #f48070; font-size: 13px; margin-top: 10px; font-weight: 700; }
+
+        @media (max-width: 980px) { .kpi-grid { grid-template-columns: repeat(2,1fr); } }
+        @media (max-width: 720px) {
+            .admin-topbar { flex-direction: column; align-items: stretch; }
+            .btn-refresh { width: 100%; justify-content: center; }
+            .kpi-grid { grid-template-columns: repeat(2,1fr); }
+        }
+    </style>
+</head>
+<body>
+    <!-- ECRAN MOT DE PASSE -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-box">
+            <img src="logo.jpg" alt="Logo">
+            <h2>Espace restaurateur</h2>
+            <p>Accès réservé aux employés de Maison du Four</p>
+            <input type="password" class="login-input" id="passwordInput" placeholder="••••••••" autocomplete="off">
+            <button class="login-btn" id="loginBtn">Accéder</button>
+            <div class="login-error" id="loginError"></div>
+        </div>
+    </div>
+    <header class="site-header">
+        <div class="container site-header-inner">
+            <a class="brand" href="#">
+                <div class="brand-mark"><img src="logo.jpg" alt="Logo Maison du Four"></div>
+                <div>
+                    <div class="brand-kicker">Feu de bois</div>
+                    <div class="brand-name">Maison du Four</div>
+                    <div class="brand-sub">Espace restaurateur</div>
+                </div>
+            </a>
+            <a href="tel:0148600066" class="header-phone">📞 01 48 60 00 66</a>
+        </div>
+    </header>
+
+    <div class="banner">
+        <img src="Maison.png.png" alt="Maison du Four">
+    </div>
+
+    <main class="page-content">
+        <div class="container">
+
+            <div class="admin-topbar">
+                <div>
+                    <div class="section-tag">Espace restaurateur</div>
+                    <h1>Commandes entrantes</h1>
+                    <p>Suivi en temps réel des commandes reçues depuis le site client. Mise à jour automatique toutes les 5 secondes.</p>
+                </div>
+                <button class="btn-refresh" id="refreshButton">🔄 Actualiser</button>
+            </div>
+
+            <div class="kpi-grid" id="statsRoot"></div>
+            <div class="orders-grid" id="ordersRoot"></div>
+
+        </div>
+    </main>
+
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyB8cSJrknn2OMOxxIyIESA6_8WF_Upjczk",
+        authDomain: "maison-du-four.firebaseapp.com",
+        projectId: "maison-du-four",
+        storageBucket: "maison-du-four.firebasestorage.app",
+        messagingSenderId: "319278460499",
+        appId: "1:319278460499:web:30950f2de69ae82e1fe0a6"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const ordersRoot=document.getElementById("ordersRoot");
+    const statsRoot=document.getElementById("statsRoot");
+    const refreshButton=document.getElementById("refreshButton");
+    const statusOrder=["nouvelle","prete","vendu"];
+    const statusLabels={nouvelle:"Nouvelle",prete:"Prête",vendu:"Vendu"};
+
+    // MOT DE PASSE (hashé SHA-256 — non lisible en clair)
+    const HASH = "64fa8fae6f93b6927c1f5967cf66934001f10735dc43418e31a9144ce6cc559b";
+    const loginScreen = document.getElementById("loginScreen");
+    const loginBtn = document.getElementById("loginBtn");
+    const passwordInput = document.getElementById("passwordInput");
+    const loginError = document.getElementById("loginError");
+
+    if(sessionStorage.getItem("admin_auth")==="ok"){ loginScreen.classList.add("hidden"); }
+
+    async function hashPassword(str){
+        const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+        return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+    }
+
+    loginBtn.addEventListener("click", async ()=>{
+        const hash = await hashPassword(passwordInput.value);
+        if(hash === HASH){
+            sessionStorage.setItem("admin_auth","ok");
+            loginScreen.classList.add("hidden");
+        } else {
+            loginError.textContent = "Mot de passe incorrect.";
+            passwordInput.value = "";
+            passwordInput.focus();
+        }
+    });
+    passwordInput.addEventListener("keydown", (e)=>{ if(e.key==="Enter") loginBtn.click(); });
+
+    function euro(v){return new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"}).format(v);}
+    function formatDate(v){return new Intl.DateTimeFormat("fr-FR",{dateStyle:"short",timeStyle:"short"}).format(new Date(v));}
+
+    function renderStats(orders){
+        const today = new Date().toDateString();
+        const vendusAujourdhui = orders.filter(o=>o.status==="vendu" && new Date(o.createdAt).toDateString()===today).length;
+        statsRoot.innerHTML=[
+            {label:"Total commandes",value:orders.length},
+            {label:"Nouvelles",value:orders.filter(o=>o.status==="nouvelle").length},
+            {label:"Prêtes",value:orders.filter(o=>o.status==="prete").length},
+            {label:"Vendus aujourd'hui",value:vendusAujourdhui}
+        ].map(s=>`<div class="kpi-card"><span class="kpi-number">${s.value}</span><span class="kpi-label">${s.label}</span></div>`).join("");
+    }
+
+    function renderOrders(orders){
+        if(!orders.length){
+            ordersRoot.innerHTML=`<div class="empty-state"><h2>Aucune commande</h2><p>Les commandes apparaîtront ici en temps réel.</p></div>`;
+            return;
+        }
+        ordersRoot.innerHTML=orders.map(o=>`
+            <article class="order-card">
+                <div class="order-head">
+                    <div><h3>Commande #${o.orderNumber||"–"}</h3><p>${o.customerName} — ${formatDate(o.createdAt)}</p></div>
+                    <span class="status-pill ${o.status}">${statusLabels[o.status]||o.status}</span>
+                </div>
+                <div class="order-info">
+                    <strong>Tél :</strong> ${o.phone} &nbsp;|&nbsp; <strong>Type :</strong> ${o.orderType==="sur_place"?"🪑 Sur place":"🥡 À emporter"}
+                    ${o.notes?`<br><strong>Notes :</strong> ${o.notes}`:""}
+                </div>
+                <div class="order-items">
+                    ${o.items.map(i=>`
+                        <div class="order-item">
+                            <div>
+                                <div class="order-item-name">${i.name}</div>
+                                <div class="order-item-sub">${i.quantity} × ${euro(i.price)}${i.removed&&i.removed.length?` — <span style="color:#f48070;">Sans : ${i.removed.join(", ")}</span>`:""}</div>
+                            </div>
+                            <div class="order-item-price">${euro(i.lineTotal)}</div>
+                        </div>`).join("")}
+                </div>
+                <div class="order-total">
+                    <span class="order-total-label">Total</span>
+                    <span class="order-total-value">${euro(o.total)}</span>
+                </div>
+                <div class="status-actions">
+                    ${statusOrder.map(s=>`<button type="button" class="status-btn ${o.status===s?"is-active":""}" data-id="${o.firebaseId}" data-status="${s}">${statusLabels[s]}</button>`).join("")}
+                    <button type="button" class="status-btn btn-delete" data-delete="${o.firebaseId}">🗑 Supprimer</button>
+                </div>
+            </article>`).join("");
+
+        ordersRoot.querySelectorAll("[data-id]").forEach(b=>b.addEventListener("click",()=>updateStatus(b.dataset.id,b.dataset.status)));
+        ordersRoot.querySelectorAll("[data-delete]").forEach(b=>b.addEventListener("click",()=>deleteOrder(b.dataset.delete)));
+    }
+
+    async function updateStatus(firebaseId, status){
+        try{
+            await updateDoc(doc(db,"commandes",firebaseId),{status});
+        }catch(err){alert("Erreur : "+err.message);}
+    }
+
+    async function deleteOrder(firebaseId){
+        if(!confirm("Supprimer cette commande ?"))return;
+        try{
+            await deleteDoc(doc(db,"commandes",firebaseId));
+        }catch(err){alert("Erreur : "+err.message);}
+    }
+
+    // Écoute en temps réel — mise à jour automatique dès qu'une commande arrive
+    const q = query(collection(db,"commandes"), orderBy("createdAt","desc"));
+    onSnapshot(q, (snapshot)=>{
+        const orders = snapshot.docs.map(d=>({firebaseId:d.id, ...d.data()}));
+        renderStats(orders);
+        renderOrders(orders);
+    }, (err)=>{
+        ordersRoot.innerHTML=`<div class="error-msg">⚠️ Impossible de charger les commandes : ${err.message}</div>`;
+    });
+
+    refreshButton.addEventListener("click",()=>{}); // Pas besoin, c'est en temps réel
+    </script>
+</body>
+</html>

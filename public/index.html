@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maison du Four | Commander</title>
+    <link rel="icon" type="image/jpeg" href="https://nur1f.github.io/Maison-du-four-villepinte/onglet.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #110d0b;
+            --panel: rgba(33, 23, 16, 0.82);
+            --panel-strong: rgba(47, 31, 20, 0.95);
+            --panel-light: rgba(255, 247, 239, 0.06);
+            --line: rgba(244, 198, 141, 0.16);
+            --line-strong: rgba(244, 198, 141, 0.3);
+            --text: #f7ead9;
+            --muted: #cdb49c;
+            --gold: #efb55b;
+            --gold-soft: #ffd79a;
+            --red: #cb4123;
+            --red-deep: #9f2d16;
+            --shadow: 0 22px 60px rgba(0,0,0,0.38);
+            --serif: "Cormorant Garamond", Georgia, serif;
+            --sans: "Manrope", Arial, sans-serif;
+            --radius-xl: 28px;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+        }
+        *, *::before, *::after { box-sizing: border-box; }
+        html { scroll-behavior: smooth; background: var(--bg); }
+        body {
+            margin: 0;
+            font-family: var(--sans);
+            color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(255,180,74,0.07), transparent 28%),
+                linear-gradient(180deg, rgba(12,8,6,0.78), rgba(12,8,6,0.94)),
+                #100c09;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: url("https://nur1f.github.io/Maison-du-four-villepinte/fondf.png") center/cover no-repeat;
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: -2;
+        }
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(10,8,7,0.08), rgba(10,8,7,0.42)),
+                radial-gradient(circle at 85% 20%, rgba(239,181,91,0.05), transparent 25%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        img { display: block; max-width: 100%; }
+        a { color: inherit; text-decoration: none; }
+        button { font: inherit; }
+        h1,h2,h3,p { margin-top: 0; }
+        .container { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
+
+        /* HEADER */
+        .site-header {
+            position: sticky; top: 0; z-index: 200;
+            border-bottom: 1px solid var(--line);
+            background: rgba(16,12,9,0.82);
+            backdrop-filter: blur(14px);
+        }
+        .site-header-inner {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 14px; padding: 12px 0;
+        }
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand-mark {
+            width: 48px; height: 48px; flex-shrink: 0;
+            border-radius: 14px; overflow: hidden;
+            border: 1px solid rgba(255,215,154,0.25);
+            background: rgba(0,0,0,0.35);
+        }
+        .brand-mark img { width: 100%; height: 100%; object-fit: contain; }
+        .brand-kicker { font-size: 9px; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 2px; }
+        .brand-name { font-family: var(--serif); font-size: clamp(20px,2.3vw,28px); font-weight: 700; line-height: 0.95; color: #fff7ef; }
+        .brand-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+        .header-phone {
+            display: inline-flex; align-items: center; gap: 8px;
+            border-radius: 999px; padding: 10px 16px;
+            background: linear-gradient(135deg, var(--red), var(--red-deep));
+            color: white; font-weight: 800; font-size: 13px; white-space: nowrap;
+            box-shadow: 0 10px 24px rgba(203,65,35,0.24);
+            transition: transform 0.2s;
+        }
+        .header-phone:hover { transform: translateY(-2px); }
+
+        /* BANNIERE */
+        .banner { width: 100%; max-height: 240px; overflow: hidden; border-bottom: 1px solid var(--line); }
+        .banner img { width: 100%; object-fit: cover; object-position: center 40%; max-height: 240px; }
+
+        /* PAGE */
+        .page-content { padding: 28px 0 60px; }
+
+        .section-tag {
+            display: inline-flex; align-items: center; gap: 8px; width: fit-content;
+            padding: 6px 14px; border-radius: 999px;
+            border: 1px solid var(--line); background: var(--panel-light);
+            font-size: 10px; font-weight: 800; letter-spacing: 0.18em;
+            text-transform: uppercase; color: var(--gold-soft); margin-bottom: 14px;
+        }
+
+        /* HERO */
+        .hero-intro { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px; margin-bottom: 32px; }
+
+        .glass-card {
+            background: var(--panel); border: 1px solid var(--line);
+            border-radius: var(--radius-xl); box-shadow: var(--shadow);
+            backdrop-filter: blur(12px); padding: 28px;
+        }
+        .glass-card h1 {
+            font-family: var(--serif); font-size: clamp(28px,4vw,46px);
+            font-weight: 700; line-height: 1.05; color: #fff7ef; margin: 10px 0 12px;
+        }
+        .glass-card p { color: var(--muted); font-size: 15px; line-height: 1.7; margin-bottom: 0; }
+
+        .meta-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 20px; }
+        .meta-card { background: var(--panel-light); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 14px; }
+        .meta-card-label { font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
+        .meta-card-value { font-size: 14px; font-weight: 700; color: var(--text); }
+
+        .side-info { display: flex; flex-direction: column; gap: 14px; }
+        .info-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 20px; flex: 1; }
+        .info-card h3 { font-family: var(--serif); font-size: 20px; font-weight: 700; color: #fff7ef; margin-bottom: 6px; }
+        .info-card p { color: var(--muted); font-size: 13px; line-height: 1.6; margin: 0; }
+
+        /* LAYOUT */
+        .layout { display: grid; grid-template-columns: minmax(0,1.3fr) minmax(320px,0.7fr); gap: 22px; align-items: start; }
+        .section-title { font-family: var(--serif); font-size: 32px; font-weight: 700; color: #fff7ef; margin-bottom: 16px; }
+        .section-sub { color: var(--muted); font-size: 14px; margin: -10px 0 18px; }
+
+        /* MENU */
+        .menu-grid { display: grid; gap: 14px; }
+        .menu-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 22px; }
+        .menu-card h3 { font-family: var(--serif); font-size: 20px; font-weight: 700; color: var(--gold-soft); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+        .item-list { display: grid; gap: 8px; }
+        .item-row {
+            display: grid; grid-template-columns: minmax(0,1fr) auto;
+            gap: 14px; align-items: center; padding: 14px;
+            border-radius: var(--radius-md);
+            background: rgba(255,247,239,0.04); border: 1px solid var(--line);
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .item-row:hover { background: rgba(255,247,239,0.07); border-color: var(--line-strong); }
+        .item-name { font-size: 15px; font-weight: 700; color: var(--text); }
+        .item-description { margin-top: 3px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+        .item-price { margin-top: 6px; color: var(--gold); font-weight: 800; font-size: 14px; }
+        .quantity-controls {
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 6px 10px; background: rgba(239,181,91,0.08);
+            border: 1px solid var(--line); border-radius: 999px;
+        }
+        .quantity-controls button {
+            width: 30px; height: 30px; border-radius: 50%; border: none;
+            background: linear-gradient(135deg, var(--red), var(--red-deep));
+            color: white; font-size: 17px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.15s;
+        }
+        .quantity-controls button:hover { transform: scale(1.08); }
+        .quantity-value { min-width: 20px; text-align: center; font-weight: 800; color: var(--gold-soft); font-size: 15px; }
+
+        /* PANIER */
+        .cart-card {
+            position: sticky; top: 80px;
+            background: var(--panel-strong); border: 1px solid var(--line);
+            border-radius: var(--radius-xl); padding: 24px; box-shadow: var(--shadow);
+        }
+        .cart-list { display: grid; gap: 10px; margin-bottom: 4px; }
+        .cart-item { padding: 12px 14px; border-radius: var(--radius-md); background: rgba(255,247,239,0.05); border: 1px solid var(--line); }
+        .cart-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .cart-row strong { color: var(--text); font-size: 14px; }
+        .price { color: var(--gold); font-weight: 800; }
+        .muted { color: var(--muted); font-size: 13px; }
+        .totals { margin: 16px 0; padding-top: 14px; border-top: 1px solid var(--line); }
+        .totals-row { display: flex; justify-content: space-between; align-items: center; }
+        .totals-row + .totals-row { margin-top: 8px; }
+        .grand-total { color: var(--gold-soft); font-size: 22px; font-weight: 800; }
+
+        /* FORM */
+        form { display: grid; gap: 12px; }
+        label { display: grid; gap: 6px; color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+        input, textarea {
+            width: 100%; padding: 12px 14px; border-radius: var(--radius-md);
+            border: 1px solid var(--line); background: rgba(255,247,239,0.05);
+            color: var(--text); font: inherit; font-size: 14px; outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus, textarea:focus { border-color: var(--gold); }
+        input::placeholder, textarea::placeholder { color: var(--muted); }
+        textarea { min-height: 80px; resize: vertical; }
+        .btn-primary {
+            width: 100%; padding: 14px 18px; border-radius: 999px; border: none;
+            background: linear-gradient(135deg, var(--red), var(--red-deep));
+            color: white; font-weight: 800; font-size: 15px; cursor: pointer;
+            box-shadow: 0 10px 24px rgba(203,65,35,0.24); transition: transform 0.2s;
+        }
+        .btn-primary:hover { transform: translateY(-2px); }
+        .btn-secondary {
+            width: 100%; padding: 12px 18px; border-radius: 999px;
+            border: 1px solid var(--line); background: var(--panel-light);
+            color: var(--muted); font-weight: 700; font-size: 14px; cursor: pointer;
+            transition: border-color 0.2s, color 0.2s;
+        }
+        .btn-secondary:hover { border-color: var(--line-strong); color: var(--text); }
+        .btn-remove {
+            padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line);
+            background: transparent; color: var(--muted); font-size: 12px;
+            font-weight: 700; cursor: pointer; transition: border-color 0.2s, color 0.2s;
+        }
+        .btn-remove:hover { border-color: #a03a2c; color: #f48070; }
+        .message { margin-top: 12px; padding: 13px 16px; border-radius: var(--radius-md); font-weight: 700; font-size: 13px; }
+        .message.success { background: rgba(45,122,82,0.18); color: #73db9a; border: 1px solid rgba(45,122,82,0.3); }
+        .message.error { background: rgba(160,58,44,0.14); color: #f48070; border: 1px solid rgba(160,58,44,0.3); }
+        .ingredient-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+        .ingredient-tag { padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255,247,239,0.06); color: var(--muted); font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: var(--sans); }
+        .ingredient-tag:hover { border-color: var(--line-strong); color: var(--text); }
+        .ingredient-tag.removed { background: rgba(160,58,44,0.14); border-color: rgba(160,58,44,0.3); color: #f48070; text-decoration: line-through; }
+        .empty-state h3 { color: var(--text); font-family: var(--serif); font-size: 22px; }
+
+        .header-actions-group { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-left: auto; }
+        .header-phone-mobile { display: none; }
+        @media (max-width: 980px) {
+            .header-phone-desktop { display: none; }
+            .header-phone-mobile { display: inline-flex; }
+            .header-actions-group { flex-direction: column; align-items: flex-end; gap: 5px; margin-left: auto; }
+            .header-phone { min-height: 34px !important; padding: 0 10px !important; font-size: 11px !important; }
+            .btn-voir-commande { font-size: 11px !important; padding: 0 10px !important; min-height: 34px !important; }
+            .brand-sub { display: none; }
+        }
+        .btn-voir-commande { background: rgba(239,181,91,0.15) !important; border: 1px solid var(--line) !important; box-shadow: none !important; color: var(--gold-soft) !important; font-size: 12px !important; }
+        .btn-voir-commande:hover { background: rgba(239,181,91,0.25) !important; }
+
+        .order-type-group { display: flex; gap: 10px; margin-top: 4px; }
+        .order-type-option { display: flex; align-items: center; gap: 8px; cursor: pointer; flex: 1; padding: 12px 14px; border-radius: var(--radius-md); border: 1px solid var(--line); background: rgba(255,247,239,0.05); transition: border-color 0.2s, background 0.2s; }
+        .order-type-option input[type="radio"] { accent-color: var(--red); width: 16px; height: 16px; }
+        .order-type-option span { font-size: 14px; font-weight: 700; color: var(--text); }
+        .order-type-option:has(input:checked) { border-color: var(--red); background: rgba(203,65,35,0.1); }
+
+        .modal-overlay { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay.open { display: flex; }
+        .modal-panel { background: rgba(33,23,16,0.98); border: 1px solid var(--line); border-radius: var(--radius-xl); padding: 28px; width: min(480px, 100%); position: relative; box-shadow: var(--shadow); }
+        .modal-close { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .modal-close:hover { border-color: var(--line-strong); color: var(--text); }
+        .modal-panel input { width: 100%; padding: 12px 14px; border-radius: var(--radius-md); border: 1px solid var(--line); background: rgba(255,247,239,0.05); color: var(--text); font: inherit; font-size: 14px; outline: none; transition: border-color 0.2s; }
+        .modal-panel input:focus { border-color: var(--gold); }
+        .modal-panel input::placeholder { color: var(--muted); }
+
+        .order-result-card { background: rgba(255,247,239,0.06); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 20px; }
+        .order-number-big { font-family: var(--serif); font-size: 48px; font-weight: 700; color: var(--gold-soft); text-align: center; margin: 8px 0; }
+        .order-number-label { text-align: center; font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+        .order-result-status { display: inline-flex; align-items: center; justify-content: center; padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; margin: 12px auto; display: block; text-align: center; }
+        .order-result-status.nouvelle { background: rgba(239,181,91,0.15); color: var(--gold-soft); }
+        .order-result-status.prete { background: rgba(45,122,82,0.18); color: #73db9a; }
+        .order-result-status.terminee { background: rgba(45,122,82,0.18); color: #73db9a; }
+        .order-result-status.annulee { background: rgba(160,58,44,0.14); color: #f48070; }
+        .order-result-items { margin-top: 14px; display: grid; gap: 6px; }
+        .order-result-item { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); padding: 8px 0; border-bottom: 1px solid var(--line); }
+        .order-result-item:last-child { border-bottom: none; }
+        .order-result-total { display: flex; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line-strong); }
+        .order-result-total span { color: var(--muted); font-size: 13px; }
+        .order-result-total strong { color: var(--gold-soft); font-size: 18px; font-weight: 800; }
+            .layout { grid-template-columns: 1fr; }
+            .cart-card { position: static; order: 2; }
+            .menu-section { order: 1; }
+            .meta-cards { grid-template-columns: repeat(2,1fr); }
+        
+        .btn-mobile-order {
+            display: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 999px;
+            border: none;
+            background: linear-gradient(135deg, var(--red), var(--red-deep));
+            color: white;
+            font-weight: 800;
+            font-size: 15px;
+            font-family: var(--sans);
+            cursor: pointer;
+            box-shadow: 0 10px 24px rgba(203,65,35,0.3);
+            margin-top: 16px;
+            transition: transform 0.2s;
+        }
+        .btn-mobile-order:hover { transform: translateY(-2px); }
+        @media (max-width: 980px) {
+            .btn-mobile-order { display: block; }
+        }
+        @media (max-width: 720px) {
+            .meta-cards { grid-template-columns: 1fr; }
+            .item-row { grid-template-columns: 1fr; }
+            .quantity-controls { justify-self: start; }
+            .section-title { font-size: 26px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container site-header-inner">
+            <a class="brand" href="#">
+                <div class="brand-mark"><img src="logo.jpg" alt="Logo Maison du Four"></div>
+                <div>
+                    <div class="brand-kicker">Feu de bois</div>
+                    <div class="brand-name">Maison du Four</div>
+                    <div class="brand-sub">Commande en ligne</div>
+                </div>
+            </a>
+            <div class="header-actions-group">
+                <a href="tel:0148600066" class="header-phone header-phone-desktop">📞 01 48 60 00 66</a>
+                <button class="header-phone header-phone-mobile" id="scrollToCart">🛒 Ma commande</button>
+                <button class="header-phone btn-voir-commande" id="btnVoirCommande">🔍 Voir ma commande</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="banner">
+        <img src="Maison.png.png" alt="Maison du Four">
+    </div>
+
+    <main class="page-content">
+        <div class="container">
+            <div class="hero-intro">
+                <div class="glass-card">
+                    <div class="section-tag">Commande en ligne</div>
+                    <h1>Compose ta commande</h1>
+                    <p>Choisis tes produits, valide et le restaurant reçoit ta commande aussitôt. Paiement sur place à Maison du Four.</p>
+                    <div class="meta-cards">
+                        <div class="meta-card"><div class="meta-card-label">Étape 1</div><div class="meta-card-value">Choisis tes plats</div></div>
+                        <div class="meta-card"><div class="meta-card-label">Étape 2</div><div class="meta-card-value">Envoie la commande</div></div>
+                        <div class="meta-card"><div class="meta-card-label">Étape 3</div><div class="meta-card-value">Paiement sur place</div></div>
+                    </div>
+                </div>
+                <div class="side-info">
+                    <div class="info-card">
+                        <div class="section-tag">Horaires</div>
+                        <h3>18h00 – 04h00</h3>
+                        <p>Tous les jours, Villepinte et Stains.</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="section-tag">Adresse</div>
+                        <h3>Villepinte</h3>
+                        <p>7 Pl. Pierre Bérégovoy, 93420</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layout">
+                <section class="menu-section">
+                    <h2 class="section-title">La carte</h2>
+                    <p class="section-sub">Ajoute les articles de ton choix puis valide dans le panneau à droite.</p>
+                    <div id="menuRoot" class="menu-grid"></div>
+                </section>
+
+                <aside class="cart-card" id="cartCard">
+                    <div class="section-tag">Ta commande</div>
+                    <div id="cartRoot" class="cart-list"></div>
+                    <div class="totals">
+                        <div class="totals-row"><span class="muted">Sous-total</span><strong id="subtotalValue" style="color:var(--text)">0,00 €</strong></div>
+                        <div class="totals-row"><span class="muted">Total</span><strong id="totalValue" class="grand-total">0,00 €</strong></div>
+                    </div>
+                    <form id="orderForm" data-anchor="orderForm">
+                        <label>Prénom<input type="text" name="customerName" placeholder="Ex : Sarah" required></label>
+                        <label>Téléphone<input type="tel" name="phone" placeholder="06 00 00 00 00" required></label>
+                        <label>Type de commande
+                            <div class="order-type-group">
+                                <label class="order-type-option">
+                                    <input type="radio" name="orderType" value="emporter" checked>
+                                    <span>🥡 À emporter</span>
+                                </label>
+                                <label class="order-type-option">
+                                    <input type="radio" name="orderType" value="sur_place">
+                                    <span>🪑 Sur place</span>
+                                </label>
+                            </div>
+                        </label>
+                        <label>Notes<textarea name="notes" placeholder="Sans olives, sauce à part..."></textarea></label>
+                        <button type="submit" class="btn-primary">Envoyer la commande</button>
+                        <button type="button" class="btn-secondary" id="clearCartButton">Vider le panier</button>
+                    </form>
+                    <div id="feedback"></div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL VOIR MA COMMANDE -->
+    <div class="modal-overlay" id="modalVoirCommande">
+        <div class="modal-panel">
+            <button class="modal-close" id="modalClose">×</button>
+            <div class="section-tag">Suivi de commande</div>
+            <h2 style="font-family:var(--serif);color:#fff7ef;margin:12px 0 8px;">Voir ma commande</h2>
+            <p style="color:var(--muted);font-size:14px;margin-bottom:20px;">Renseigne tes informations pour retrouver ta commande.</p>
+            <div id="modalForm">
+                <div style="display:grid;gap:12px;">
+                    <label style="display:grid;gap:6px;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">
+                        Prénom
+                        <input type="text" id="searchName" placeholder="Ex : Sarah">
+                    </label>
+                    <label style="display:grid;gap:6px;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">
+                        Téléphone
+                        <input type="tel" id="searchPhone" placeholder="06 00 00 00 00">
+                    </label>
+                    <label style="display:grid;gap:6px;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">
+                        Numéro de commande
+                        <input type="number" id="searchOrderNum" placeholder="Ex : 12">
+                    </label>
+                    <button class="btn-primary" id="btnSearchOrder">Rechercher</button>
+                </div>
+                <div id="searchResult" style="margin-top:16px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyB8cSJrknn2OMOxxIyIESA6_8WF_Upjczk",
+        authDomain: "maison-du-four.firebaseapp.com",
+        projectId: "maison-du-four",
+        storageBucket: "maison-du-four.firebasestorage.app",
+        messagingSenderId: "319278460499",
+        appId: "1:319278460499:web:30950f2de69ae82e1fe0a6"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // SCROLL
+    function scrollToCart(){document.getElementById("cartCard").scrollIntoView({behavior:"smooth",block:"start"});}
+    document.getElementById("scrollToCart").addEventListener("click", scrollToCart);
+
+    // MODAL VOIR MA COMMANDE
+    const modal = document.getElementById("modalVoirCommande");
+    document.getElementById("btnVoirCommande").addEventListener("click", ()=>{ modal.classList.add("open"); });
+    document.getElementById("modalClose").addEventListener("click", ()=>{ modal.classList.remove("open"); document.getElementById("searchResult").innerHTML=""; });
+    modal.addEventListener("click", (e)=>{ if(e.target===modal){ modal.classList.remove("open"); document.getElementById("searchResult").innerHTML=""; }});
+
+    const statusLabelsModal = {nouvelle:"🟡 Nouvelle",prete:"✅ Prête à récupérer",terminee:"✅ Terminée",annulee:"❌ Annulée"};
+
+    document.getElementById("btnSearchOrder").addEventListener("click", async ()=>{
+        const name = document.getElementById("searchName").value.trim().toLowerCase();
+        const phone = document.getElementById("searchPhone").value.trim();
+        const num = parseInt(document.getElementById("searchOrderNum").value);
+        const result = document.getElementById("searchResult");
+
+        if(!name || !phone || !num){ result.innerHTML=`<p style="color:#f48070;font-size:13px;">Remplis tous les champs.</p>`; return; }
+
+        result.innerHTML=`<p style="color:var(--muted);font-size:13px;">Recherche en cours...</p>`;
+        try{
+            const snap = await getDocs(collection(db,"commandes"));
+            const order = snap.docs.map(d=>d.data()).find(o=>
+                o.customerName.trim().toLowerCase()===name &&
+                o.phone.trim().replace(/\s/g,"")===phone.replace(/\s/g,"") &&
+                o.orderNumber===num
+            );
+            if(!order){ result.innerHTML=`<p style="color:#f48070;font-size:13px;">Commande introuvable. Vérifie tes informations.</p>`; return; }
+
+            const euro = v => new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"}).format(v);
+            result.innerHTML=`
+                <div class="order-result-card">
+                    <div class="order-number-label">Numéro de commande</div>
+                    <div class="order-number-big">#${order.orderNumber}</div>
+                    <div class="order-result-status ${order.status}">${statusLabelsModal[order.status]||order.status}</div>
+                    <div class="order-result-items">
+                        ${order.items.map(i=>`<div class="order-result-item"><span>${i.quantity}× ${i.name}</span><span>${euro(i.lineTotal)}</span></div>`).join("")}
+                    </div>
+                    <div class="order-result-total"><span>Total</span><strong>${euro(order.total)}</strong></div>
+                    <p style="margin:12px 0 0;font-size:12px;color:var(--muted);text-align:center;">Type : ${order.orderType==="sur_place"?"Sur place":"À emporter"}</p>
+                </div>`;
+        }catch(err){ result.innerHTML=`<p style="color:#f48070;font-size:13px;">Erreur : ${err.message}</p>`; }
+    });
+
+    // MENU & PANIER
+    const menuRoot=document.getElementById("menuRoot"),cartRoot=document.getElementById("cartRoot"),subtotalValue=document.getElementById("subtotalValue"),totalValue=document.getElementById("totalValue"),orderForm=document.getElementById("orderForm"),feedback=document.getElementById("feedback"),clearCartButton=document.getElementById("clearCartButton");
+    let menuData=null;const cart={};const removedIngredients={};
+
+    const MENU={categories:[
+        {id:"pizzas-tomate",name:"🍕 Pizzas base sauce tomate",items:[{id:"margherita",name:"Margherita",price:10,description:"Mozzarella, olives"},{id:"reine",name:"Reine",price:11,description:"Mozzarella, jambon, champignons frais"},{id:"campione",name:"Campione",price:11,description:"Mozzarella, viande hachée, œuf"},{id:"quatre-fromages",name:"4 Fromages",price:11,description:"Mozzarella, chèvre, bleu, brie"},{id:"orientale",name:"L'Orientale",price:11,description:"Mozzarella, merguez, poivrons, œuf"},{id:"quatre-saisons",name:"4 Saisons",price:11,description:"Mozzarella, jambon, champignons, poivrons, artichauts, olives"},{id:"calzone",name:"La Calzone",price:12,description:"Mozzarella, œuf, champignons, jambon ou viande hachée"},{id:"hot-mexicaine",name:"La Hot Mexicaine",price:12,description:"Mozzarella, sauce chili, poulet rôti, poivrons, piment"},{id:"royale",name:"La Royale",price:12,description:"Mozzarella, pepperoni, viande hachée, merguez, poivrons, champignons"},{id:"savoyarde",name:"Savoyarde",price:12,description:"Mozzarella, lardons, pommes de terre, raclette, oignon"},{id:"quatre-viandes",name:"La 4 Viandes",price:12,description:"Mozzarella, jambon, viande hachée, merguez, poulet"},{id:"neptune",name:"La Neptune",price:12,description:"Mozzarella, thon, œuf, oignon, olives"},{id:"vegie",name:"Vegie",price:12,description:"Mozzarella, tomates fraîches, olives, poivrons, champignons, burrata"},{id:"bbq",name:"La BBQ",price:13,description:"Mozzarella, viande hachée, merguez, champignons, olives, œuf, sauce barbecue"},{id:"maison-du-four",name:"Maison du Four ⭐",price:13,description:"Mozzarella, viande hachée, merguez, champignons, poivrons, olives, œuf, oignons"},{id:"burrata",name:"Burrata",price:13,description:"Mozzarella, burrata, roquette, balsamique, tomates fraîches, pesto"},{id:"fruit-de-mer",name:"La Fruit de Mer",price:13,description:"Mozzarella, fruits de mer, rondelle de citron"}]},
+        {id:"pizzas-creme",name:"🍕 Pizzas base crème fraîche",items:[{id:"fermiere",name:"La Fermière",price:12,description:"Mozzarella, poulet émincé, pommes de terre, œuf, champignons"},{id:"chevre-miel",name:"La Chèvre Miel",price:12,description:"Mozzarella, viande hachée, chèvre, miel"},{id:"milano",name:"Milano",price:12,description:"Mozzarella, jambon, oignon, pomme de terre, champignons"},{id:"tartiflette",name:"La Tartiflette",price:12,description:"Mozzarella, raclette, lardons, pommes de terre, reblochon, oignons"},{id:"boursin",name:"La Boursin",price:13,description:"Mozzarella, poulet émincé, jambon, pommes de terre, boursin"},{id:"saumon",name:"La Saumon",price:13,description:"Mozzarella, saumon, crème citronnée, aneth"}]},
+        {id:"supplements",name:"➕ Garnitures supplémentaires",items:[{id:"supplement-legume",name:"Supplément légume",price:1,description:"Ajout sur pizza"},{id:"supplement-fromage",name:"Supplément fromage",price:1,description:"Ajout sur pizza"},{id:"supplement-viande",name:"Supplément viande",price:2,description:"Ajout sur pizza"}]},
+        {id:"sandwichs",name:"🥖 Sandwichs au four",items:[{id:"sandwich-four",name:"Sandwich au Four",price:10,description:"Avec frites maison. Viandes : merguez, viande hachée, poulet. Supplément viande +2€, fromage +1€."}]},
+        {id:"bruschettas",name:"🍞 Bruschettas",items:[{id:"bruschetta-legumes",name:"Bruschetta Légumes",price:8,description:"Sauce tomate, poivrons, oignon, champignon, tomate fraîche, burrata"},{id:"bruschetta-poulet",name:"Bruschetta Poulet",price:9,description:"Sauce tomate, poulet, oignon, fromage, tomates fraîches, poivrons"},{id:"bruschetta-saumon",name:"Bruschetta Saumon",price:9,description:"Crème fraîche, saumon fumé, burrata, guacamole"}]},
+        {id:"salades",name:"🥗 Salades",items:[{id:"petite-salade-verte",name:"Petite salade verte",price:3,description:"Tomate, olive, maïs, gruyère"},{id:"nicoise",name:"Niçoise",price:7,description:"Salade, tomate, œuf dur, olive, pomme de terre, anchois, thon, champignons, gruyère"},{id:"salade-fermiere",name:"Fermière",price:8,description:"Poulet émincé, pomme de terre, gruyère, champignons, maïs"},{id:"parisienne",name:"La Parisienne",price:8,description:"Jambon, pomme de terre, olive, maïs, champignons, gruyère"},{id:"avocado",name:"L'Avocado",price:9,description:"Crevettes, avocat, sauce cocktail, gruyère, tomate, œuf dur, maïs"},{id:"crustaces",name:"Crustacés",price:9,description:"Saumon fumé, surimi, œuf dur, avocat, maïs, gruyère"}]},
+        {id:"pates-lasagnes",name:"🍝 Pâtes, lasagnes et menus",items:[{id:"lasagne-bolognaise",name:"Lasagne Bolognaise",price:9.5,description:"Avec boisson offerte et pain maison"},{id:"pates-au-four",name:"Pâtes au Four",price:9,description:"Bolognaise, saumon, 4 fromages, carbonara ou forestière"},{id:"menu-enfant",name:"Menu Enfant",price:7.5,description:"1 pizza junior jambon fromage + 1 Capri-Sun + 1 Kinder"}]},
+        {id:"tex-mex",name:"🍟 Tex-Mex",items:[{id:"frites-maison",name:"Portion de frites maison",price:2.5,description:"Portion individuelle"},{id:"wings-nuggets-6",name:"6 wings ou nuggets",price:5,description:"Au choix"},{id:"stick-mozza-5",name:"Stick Mozza (5 pièces)",price:5,description:"Mozzarella croustillante"},{id:"jalapenos",name:"Jalapeños",price:5,description:"Portion"},{id:"wings-nuggets-12",name:"12 wings ou nuggets",price:8,description:"Au choix"}]},
+        {id:"desserts-boissons",name:"🍨 Desserts et boissons",items:[{id:"desserts",name:"Desserts",price:3,description:"Tiramisu, tarte du jour ou yaourt"},{id:"haagen-dazs-100",name:"Glace Häagen-Dazs 100ml",price:3.5,description:"Pot 100ml"},{id:"haagen-dazs-500",name:"Glace Häagen-Dazs 500ml",price:7.5,description:"Pot 500ml"},{id:"eau-50cl",name:"Eau 50cl",price:1,description:"Boisson"},{id:"canette",name:"Canette",price:1.5,description:"Boisson"},{id:"bouteille-15l",name:"Bouteille 1,5L",price:3,description:"Boisson"},{id:"bouteille-2l",name:"Bouteille 2L",price:3.5,description:"Boisson"}]}
+    ]};
+
+    function euro(v){return new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"}).format(v);}
+    function setFeedback(m,t){feedback.innerHTML=m?`<div class="message ${t}">${m}</div>`:``;}
+    function getAllItems(){return menuData?menuData.categories.flatMap(c=>c.items):[];}
+    function getCartItems(){return getAllItems().filter(i=>cart[i.id]>0).map(i=>({...i,quantity:cart[i.id],lineTotal:cart[i.id]*i.price,removed:removedIngredients[i.id]||[]}));}
+    function changeQuantity(id,delta){const n=Math.max(0,(cart[id]||0)+delta);if(n===0){delete cart[id];delete removedIngredients[id];}else cart[id]=n;renderMenu();renderCart();}
+    function clearCart(){Object.keys(cart).forEach(k=>delete cart[k]);Object.keys(removedIngredients).forEach(k=>delete removedIngredients[k]);renderMenu();renderCart();}
+
+    function toggleIngredient(itemId, ingredient){
+        if(!removedIngredients[itemId]) removedIngredients[itemId]=[];
+        const idx = removedIngredients[itemId].indexOf(ingredient);
+        if(idx===-1) removedIngredients[itemId].push(ingredient);
+        else removedIngredients[itemId].splice(idx,1);
+        renderMenu();renderCart();
+    }
+
+    function renderMenu(){
+        if(!menuData){menuRoot.innerHTML=`<div class="empty-state"><p>Chargement...</p></div>`;return;}
+        menuRoot.innerHTML=menuData.categories.map(cat=>`
+            <article class="menu-card"><h3>${cat.name}</h3><div class="item-list">
+            ${cat.items.map(item=>{
+                const inCart = cart[item.id]>0;
+                const ingredients = item.description.split(", ");
+                const removed = removedIngredients[item.id]||[];
+                const ingredientTags = inCart && ingredients.length > 1 ? `
+                    <div class="ingredient-tags">
+                        ${ingredients.map(ing=>`<button type="button" class="ingredient-tag ${removed.includes(ing)?"removed":""}" data-item-id="${item.id}" data-ingredient="${ing}">${removed.includes(ing)?"✕ ":""} ${ing}</button>`).join("")}
+                    </div>` : "";
+                return `<div class="item-row">
+                    <div>
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-description">${item.description}</div>
+                        <div class="item-price">${euro(item.price)}</div>
+                        ${ingredientTags}
+                    </div>
+                    <div class="quantity-controls">
+                        <button type="button" data-action="decrease" data-id="${item.id}">−</button>
+                        <span class="quantity-value">${cart[item.id]||0}</span>
+                        <button type="button" data-action="increase" data-id="${item.id}">+</button>
+                    </div>
+                </div>`;
+            }).join("")}
+            </div></article>`).join("");
+
+        menuRoot.querySelectorAll("button[data-id]").forEach(btn=>btn.addEventListener("click",()=>changeQuantity(btn.dataset.id,btn.dataset.action==="increase"?1:-1)));
+        menuRoot.querySelectorAll(".ingredient-tag").forEach(btn=>btn.addEventListener("click",()=>toggleIngredient(btn.dataset.itemId, btn.dataset.ingredient)));
+    }
+
+    function renderCart(){
+        const items=getCartItems();
+        if(!items.length){cartRoot.innerHTML=`<div class="empty-state"><h3>Panier vide</h3><p>Ajoute des produits depuis la carte.</p></div>`;subtotalValue.textContent=euro(0);totalValue.textContent=euro(0);return;}
+        const sub=items.reduce((s,i)=>s+i.lineTotal,0);
+        cartRoot.innerHTML=items.map(i=>`
+            <div class="cart-item">
+                <div class="cart-row"><strong>${i.name}</strong><span class="price">${euro(i.lineTotal)}</span></div>
+                <div class="cart-row muted" style="margin-top:6px"><span>${i.quantity} × ${euro(i.price)}</span><button type="button" class="btn-remove" data-remove="${i.id}">Retirer</button></div>
+                ${i.removed&&i.removed.length?`<div style="margin-top:6px;font-size:12px;color:#f48070;">Sans : ${i.removed.join(", ")}</div>`:""}
+            </div>`).join("");
+        cartRoot.querySelectorAll("[data-remove]").forEach(btn=>btn.addEventListener("click",()=>changeQuantity(btn.dataset.remove,-1)));
+        subtotalValue.textContent=euro(sub);totalValue.textContent=euro(sub);
+    }
+
+    async function getNextOrderNumber(){
+        const snap=await getDocs(collection(db,"commandes"));
+        let max=0;
+        snap.forEach(doc=>{const n=doc.data().orderNumber||0;if(n>max)max=n;});
+        return max+1;
+    }
+
+    async function submitOrder(e){
+        e.preventDefault();setFeedback("","");
+        const items=getCartItems();
+        if(!items.length){setFeedback("Ajoute au moins un article.","error");return;}
+        const fd=new FormData(orderForm);
+        const orderType=fd.get("orderType");
+        const typeLabel=orderType==="sur_place"?"sur place":"à emporter";
+        if(!window.confirm(`Commande ${typeLabel} — paiement sur place au 7 Pl. Pierre Bérégovoy, 93420 Villepinte.\n\nOK pour finaliser ?`))return;
+        try{
+            const orderNumber=await getNextOrderNumber();
+            const order={
+                orderNumber,
+                status:"nouvelle",
+                createdAt:new Date().toISOString(),
+                customerName:fd.get("customerName"),
+                phone:fd.get("phone"),
+                orderType,
+                notes:fd.get("notes")||"",
+                items:items.map(i=>({id:i.id,name:i.name,price:i.price,quantity:i.quantity,lineTotal:i.lineTotal,removed:i.removed||[]})),
+                total:items.reduce((s,i)=>s+i.lineTotal,0)
+            };
+            await addDoc(collection(db,"commandes"),order);
+            setFeedback(`
+                <div style="text-align:center;">
+                    <div style="font-size:11px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);margin-bottom:4px;">Numéro de commande</div>
+                    <div style="font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:700;color:#ffd79a;line-height:1;">#${orderNumber}</div>
+                    <div style="margin-top:8px;">✅ Commande envoyée ! Paiement sur place.</div>
+                    <div style="font-size:12px;color:var(--muted,#cdb49c);margin-top:4px;">Garde ce numéro pour suivre ta commande.</div>
+                </div>`,"success");
+            orderForm.reset();clearCart();
+        }catch(err){setFeedback("Erreur lors de l'envoi. Réessaie.","error");console.error(err);}
+    }
+
+    clearCartButton.addEventListener("click",()=>{clearCart();setFeedback("","");});
+    orderForm.addEventListener("submit",submitOrder);
+    menuData=MENU;renderMenu();renderCart();
+    </script>
+</body>
+</html>
