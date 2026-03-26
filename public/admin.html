@@ -314,18 +314,14 @@
 
     // ─── GESTION VENDU AVEC COUNTDOWN ────────────────────────────────────────
     const pendingVendu = {}; // { firebaseId: { timeout, interval, seconds } }
+    let venduCount = 0; // compteur local des vendus du jour, indépendant de Firebase
 
     function renderStats(orders){
-        const today = new Date().toDateString();
-        // Compter vendus confirmés + ceux en attente de confirmation (déjà cliqués)
-        const vendusConfirmes = orders.filter(o=>o.status==="vendu" && new Date(o.createdAt).toDateString()===today).length;
-        const vendusEnAttente = Object.keys(pendingVendu).length;
-        const vendusAujourdhui = vendusConfirmes + vendusEnAttente;
         statsRoot.innerHTML=[
             {label:"Total commandes", value:orders.length},
             {label:"Nouvelles",        value:orders.filter(o=>o.status==="nouvelle").length},
             {label:"Prêtes",           value:orders.filter(o=>o.status==="prete").length},
-            {label:"Vendus aujourd'hui",value:vendusAujourdhui}
+            {label:"Vendus aujourd'hui",value:venduCount + Object.keys(pendingVendu).length}
         ].map(s=>`<div class="kpi-card"><span class="kpi-number">${s.value}</span><span class="kpi-label">${s.label}</span></div>`).join("");
     }
 
@@ -336,30 +332,32 @@
             clearInterval(pendingVendu[firebaseId].interval);
             delete pendingVendu[firebaseId];
             renderVenduBtn(firebaseId, false);
-            // Recalc stats
-            const lastOrders = Array.from(ordersRoot.querySelectorAll("[data-firebase-id]")).map(el=>({firebaseId:el.dataset.firebaseId,status:el.dataset.status,createdAt:el.dataset.createdAt}));
+            // Recalc stats sans changer venduCount
+            const lastOrders = Array.from(ordersRoot.querySelectorAll("article[data-firebase-id]")).map(el=>({firebaseId:el.dataset.firebaseId,status:el.dataset.status,createdAt:el.dataset.createdAt}));
             renderStats(lastOrders);
             return;
         }
 
         let seconds = 30;
-        pendingVendu[firebaseId] = {};
+        pendingVendu[firebaseId] = { seconds };
         renderVenduBtn(firebaseId, true, seconds);
 
-        // Recalc stats immédiatement (compte +1 vendu en attente)
+        // Recalc stats immédiatement (+1 via pendingVendu)
         const allCards = Array.from(ordersRoot.querySelectorAll("article[data-firebase-id]")).map(el=>({firebaseId:el.dataset.firebaseId,status:el.dataset.status,createdAt:el.dataset.createdAt}));
         renderStats(allCards);
 
         pendingVendu[firebaseId].interval = setInterval(()=>{
             seconds--;
+            pendingVendu[firebaseId].seconds = seconds;
             renderVenduBtn(firebaseId, true, seconds);
         }, 1000);
 
         pendingVendu[firebaseId].timeout = setTimeout(async ()=>{
             clearInterval(pendingVendu[firebaseId].interval);
             delete pendingVendu[firebaseId];
+            venduCount++; // +1 vendu confirmé définitif
             try{
-                await updateDoc(doc(db,"commandes",firebaseId),{status:"vendu"});
+                await deleteDoc(doc(db,"commandes",firebaseId)); // supprime de Firebase
             }catch(err){ alert("Erreur : "+err.message); }
         }, 30000);
     }
@@ -441,18 +439,19 @@
         const currentIds = new Set(snapshot.docs.map(d=>d.id));
 
         if(knownOrderIds !== null){
-            // Cherche un ID inconnu = nouvelle commande
             let isNew = false;
             currentIds.forEach(id=>{ if(!knownOrderIds.has(id)) isNew=true; });
             if(isNew){
                 alertAudio.currentTime = 0;
-                alertAudio.play().catch(()=>{}); // catch si autoplay bloqué
+                alertAudio.play().catch(()=>{});
             }
         }
         knownOrderIds = currentIds;
 
-        renderStats(orders);
-        renderOrders(orders);
+        // On filtre les commandes en cours de validation (pendingVendu) pour pas les réafficher
+        const filteredOrders = orders.filter(o => !pendingVendu[o.firebaseId]);
+        renderStats(filteredOrders);
+        renderOrders(filteredOrders);
     }, (err)=>{
         ordersRoot.innerHTML=`<div class="error-msg">⚠️ Impossible de charger les commandes : ${err.message}</div>`;
     });
