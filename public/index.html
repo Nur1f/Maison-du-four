@@ -766,19 +766,51 @@
         const params = new URLSearchParams(window.location.search);
         if(params.get("success") === "1"){
             const feedback = document.getElementById("feedback");
-            feedback.innerHTML = `
-                <div style="text-align:center;padding:20px 0;">
-                    <div style="font-size:40px;margin-bottom:12px;">🎉</div>
-                    <div style="font-size:11px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;">Paiement confirmé</div>
-                    <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:#ffd79a;line-height:1.2;margin-bottom:8px;">Commande bien reçue !</div>
-                    <div style="font-size:13px;color:var(--muted);">Le restaurant prépare ta commande. Tu peux fermer cette page.</div>
-                </div>`;
+            const sessionId = params.get("session");
+
+            // Scroll immédiat vers le panier
+            setTimeout(()=>{ document.getElementById("cartCard").scrollIntoView({behavior:"smooth",block:"start"}); }, 300);
+
+            // Message temporaire
+            feedback.innerHTML = `<div style="text-align:center;padding:16px;color:var(--muted);">⏳ Chargement de ta commande...</div>`;
             feedback.className = "message success";
-            // Nettoyer l'URL
+
+            // Nettoyer URL + panier
             history.replaceState(null, "", window.location.pathname);
             clearCart();
+
+            // Récupérer le numéro de commande depuis Firebase via stripeSessionId
+            (async () => {
+                try {
+                    const snap = await getDocs(collection(db, "commandes"));
+                    const order = snap.docs.map(d => d.data()).find(o => o.stripeSessionId === sessionId);
+                    const orderNumber = order?.orderNumber || null;
+
+                    feedback.innerHTML = `
+                        <div style="text-align:center;padding:20px 0;">
+                            <div style="font-size:36px;margin-bottom:10px;">🎉</div>
+                            <div style="font-size:11px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">Paiement confirmé</div>
+                            ${orderNumber ? `
+                                <div style="font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:2px;">Numéro de commande</div>
+                                <div style="font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:700;color:#ffd79a;line-height:1;margin-bottom:10px;">#${orderNumber}</div>
+                            ` : ""}
+                            <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:#fff7ef;margin-bottom:8px;">Commande bien reçue !</div>
+                            <div style="font-size:13px;color:var(--muted);margin-bottom:4px;">Le restaurant prépare ta commande. 🍕</div>
+                            ${orderNumber ? `<div style="font-size:12px;color:var(--muted);">Utilise le <strong style="color:#ffd79a;">numéro #${orderNumber}</strong> dans "Voir ma commande" pour suivre.</div>` : ""}
+                        </div>`;
+                } catch(err) {
+                    feedback.innerHTML = `
+                        <div style="text-align:center;padding:20px 0;">
+                            <div style="font-size:36px;margin-bottom:10px;">🎉</div>
+                            <div style="font-size:11px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">Paiement confirmé</div>
+                            <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:#fff7ef;margin-bottom:8px;">Commande bien reçue !</div>
+                            <div style="font-size:13px;color:var(--muted);">Le restaurant prépare ta commande. 🍕</div>
+                        </div>`;
+                }
+            })();
         }
         if(params.get("cancelled") === "1"){
+            setTimeout(()=>{ document.getElementById("cartCard").scrollIntoView({behavior:"smooth",block:"start"}); }, 300);
             setFeedback("Paiement annulé. Tu peux réessayer quand tu veux.", "error");
             history.replaceState(null, "", window.location.pathname);
         }
