@@ -2,7 +2,11 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { initializeApp, cert, getApps } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
 
-// Initialise Firebase Admin une seule fois
+// Indispensable — désactive le parsing automatique du body par Vercel
+export const config = {
+    api: { bodyParser: false }
+};
+
 if (!getApps().length) {
     initializeApp({
         credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT))
@@ -10,15 +14,26 @@ if (!getApps().length) {
 }
 const db = getFirestore();
 
+// Lire le body brut manuellement
+function getRawBody(req) {
+    return new Promise((resolve, reject) => {
+        let data = '';
+        req.on('data', chunk => { data += chunk; });
+        req.on('end', () => resolve(data));
+        req.on('error', reject);
+    });
+}
+
 module.exports = async (req, res) => {
     if (req.method !== 'POST') return res.status(405).end();
 
+    const rawBody = await getRawBody(req);
     const sig = req.headers['stripe-signature'];
-    let event;
 
+    let event;
     try {
         event = stripe.webhooks.constructEvent(
-            req.body,
+            rawBody,
             sig,
             process.env.STRIPE_WEBHOOK_SECRET
         );
@@ -29,11 +44,8 @@ module.exports = async (req, res) => {
 
     if (event.type === 'checkout.session.completed') {
         const session = event.data.object;
-
         try {
-            // Récupérer les articles de la session Stripe
             const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
-
             const items = lineItems.data.map(item => ({
                 name: item.description,
                 quantity: item.quantity,
@@ -41,12 +53,10 @@ module.exports = async (req, res) => {
                 lineTotal: item.amount_total / 100,
             }));
 
-            // Calculer le prochain numéro de commande
             const snapshot = await db.collection('commandes').orderBy('orderNumber', 'desc').limit(1).get();
             const lastOrder = snapshot.docs[0]?.data();
             const orderNumber = (lastOrder?.orderNumber || 0) + 1;
 
-            // Créer la commande dans Firestore
             await db.collection('commandes').add({
                 orderNumber,
                 customerName: session.metadata.customerName || 'Client',
@@ -61,7 +71,7 @@ module.exports = async (req, res) => {
                 createdAt: new Date().toISOString(),
             });
 
-            console.log(`✅ Commande #${orderNumber} créée dans Firebase`);
+            console.log(`✅ Commande #${orderNumber} créée`);
         } catch (err) {
             console.error('Erreur Firebase:', err.message);
             return res.status(500).json({ error: err.message });
