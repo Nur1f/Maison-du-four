@@ -551,18 +551,21 @@
     function getAllItems(){return menuData?menuData.categories.flatMap(c=>c.items):[];}
     function getCount(itemId){return cartInstances.filter(i=>i.itemId===itemId).length;}
 
+    // Calcule le surprix d'une viande (ex: "+2€" dans le label)
+    function getViandeExtra(viande) {
+        if (!viande) return 0;
+        const match = viande.match(/\+(\d+)€/);
+        return match ? parseInt(match[1]) : 0;
+    }
+
     function addInstance(itemId){
         const item=getAllItems().find(i=>i.id===itemId);
-        if(item&&item.sandwich&&!currentSandwichViande[itemId]){
-            document.querySelector(`[data-sandwich-panel="${itemId}"]`)?.classList.add("shake");
-            setTimeout(()=>document.querySelector(`[data-sandwich-panel="${itemId}"]`)?.classList.remove("shake"),500);
-            return;
-        }
+        // Plus de blocage — le choix se fait dans le panier
         cartInstances.push({
             uid:nextUid++,
             itemId,
             removed:[],
-            viande:item&&item.sandwich?currentSandwichViande[itemId]:null
+            viande: null // choix fait dans le panier
         });
         renderMenu();renderCart();
     }
@@ -582,6 +585,13 @@
     function clearCart(){cartInstances=[];Object.keys(currentSandwichViande).forEach(k=>delete currentSandwichViande[k]);renderMenu();renderCart();}
 
     function selectSandwichViande(itemId,viande){currentSandwichViande[itemId]=viande;renderMenu();}
+    function selectViandeForInstance(uid, viande) {
+        const inst = cartInstances.find(i=>i.uid===uid);
+        if (!inst) return;
+        inst.viande = viande;
+        renderCart();
+        // Recalc total
+    }
 
     function toggleIngredientInstance(uid, ingredient){
         const inst=cartInstances.find(i=>i.uid===uid);
@@ -600,19 +610,7 @@
                 const count=getCount(item.id);
                 const enStock = stockData[item.id] !== false; // true par défaut si pas dans RTDB
 
-                // Panel sandwich
-                const sandwichPanel = item.sandwich ? `
-                    <div class="sandwich-panel" data-sandwich-panel="${item.id}">
-                        <div class="sandwich-panel-title">${item.id.includes('wings') ? '🍗 Choisis ton type' : '🥩 Choisis ta viande'}</div>
-                        <div class="sandwich-choices">
-                            ${item.viandes.map(v=>`
-                                <div class="sandwich-choice ${currentSandwichViande[item.id]===v?"selected":""}" data-sandwich-id="${item.id}" data-viande="${v}">
-                                    <div class="sandwich-choice-check">${currentSandwichViande[item.id]===v?"✓":""}</div>
-                                    <div><div class="sandwich-choice-label">${v}</div></div>
-                                </div>`).join("")}
-                        </div>
-                        ${!currentSandwichViande[item.id]?`<p style="color:var(--gold);font-size:12px;margin:8px 0 0;font-weight:700;">${item.id.includes('wings') ? '👆 Choisis ton type pour ajouter au panier' : '👆 Choisis une viande pour ajouter au panier'}</p>`:""}
-                    </div>` : "";
+                const sandwichPanel = ""; // choix viande maintenant dans le panier
 
                 const quantityBlock = enStock
                     ? `<div class="quantity-controls" style="flex-shrink:0">
@@ -642,7 +640,7 @@
             if(btn.dataset.action==="increase") addInstance(btn.dataset.id);
             else removeLastInstance(btn.dataset.id);
         }));
-        menuRoot.querySelectorAll(".sandwich-choice").forEach(el=>el.addEventListener("click",()=>selectSandwichViande(el.dataset.sandwichId, el.dataset.viande)));
+
     }
 
     function renderCart(){
@@ -663,11 +661,38 @@
             const instances=grouped[itemId];
             const item=getAllItems().find(i=>i.id===itemId);
             if(!item) return "";
-            const lineTotal=instances.length*item.price;
-            total+=lineTotal;
-            const ingredients=item.description.split(", ");
             const hasMultiple=instances.length>1;
-            const hasIngredients=ingredients.length>1 && !item.sandwich;
+            const hasIngredients=item.description.split(", ").length>1 && !item.sandwich;
+            const ingredients=item.description.split(", ");
+
+            // Calcul total de la ligne avec les extras viande
+            const lineTotal=instances.reduce((sum,inst)=>{
+                const extra = getViandeExtra(inst.viande);
+                return sum + item.price + extra;
+            }, 0);
+            total+=lineTotal;
+
+            return `<div class="cart-item">
+                <div class="cart-row"><strong>${item.name}</strong><span class="price">${euro(lineTotal)}</span></div>
+                <div class="cart-row muted" style="margin-top:6px"><span>${instances.length} × ${euro(item.price)}${instances.some(i=>getViandeExtra(i.viande)>0)?` + extras`:""}`;
+        }).join("") + cartInstances.map(inst => {
+            // On affiche chaque instance séparément
+            return "";
+        }).join("");
+
+        // En fait on refait proprement :
+        total=0;
+        cartRoot.innerHTML=Object.keys(grouped).map(itemId=>{
+            const instances=grouped[itemId];
+            const item=getAllItems().find(i=>i.id===itemId);
+            if(!item) return "";
+            const hasMultiple=instances.length>1;
+            const hasIngredients=item.description.split(", ").length>1 && !item.sandwich;
+            const ingredients=item.description.split(", ");
+            const isWings=itemId.includes("wings");
+
+            const lineTotal=instances.reduce((sum,inst)=>sum+item.price+getViandeExtra(inst.viande),0);
+            total+=lineTotal;
 
             return `<div class="cart-item">
                 <div class="cart-row"><strong>${item.name}</strong><span class="price">${euro(lineTotal)}</span></div>
@@ -675,7 +700,21 @@
                 ${instances.map((inst,idx)=>{
                     const num=hasMultiple?` #${idx+1}`:"";
                     const removedDisplay=inst.removed.length?`<div style="margin-top:4px;font-size:12px;color:#f48070;">Sans : ${inst.removed.join(", ")}</div>`:"";
-                    const viandeDisplay=inst.viande?`<div style="margin-top:4px;font-size:12px;color:#73db9a;font-weight:700;">${inst.itemId.includes('wings') ? '🍗' : '🥩'} ${inst.viande}</div>`:"";
+
+                    // Panel choix viande dans le panier (comme les tags)
+                    const viandePanel=item.sandwich?`
+                        <div style="margin-top:8px;">
+                            <div style="font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">${isWings?"🍗 Type":"🥩 Viande"}</div>
+                            <div class="ingredient-tags">
+                                ${item.viandes.map(v=>`<button type="button"
+                                    class="ingredient-tag ${inst.viande===v?"selected-viande":""}"
+                                    style="${inst.viande===v?"background:rgba(45,122,82,0.2);border-color:#73db9a;color:#73db9a;":""}"
+                                    data-viande-uid="${inst.uid}" data-viande-val="${v}">
+                                    ${v}${getViandeExtra(v)>0?` <span style="color:var(--gold);font-size:10px;">+${getViandeExtra(v)}€</span>`:""}
+                                </button>`).join("")}
+                            </div>
+                            ${!inst.viande?`<p style="color:var(--gold);font-size:11px;margin:6px 0 0;font-weight:700;">👆 Choix requis avant de payer</p>`:""}
+                        </div>`:"";
 
                     const tagSection=hasIngredients?`
                         <div class="ingredient-tags">
@@ -687,7 +726,7 @@
                             <span class="cart-instance-label">${item.name}${num}</span>
                             <button type="button" class="btn-remove" data-remove-uid="${inst.uid}">Retirer</button>
                         </div>
-                        ${viandeDisplay}
+                        ${viandePanel}
                         ${removedDisplay}
                         ${tagSection}
                     </div>`;
@@ -697,6 +736,9 @@
 
         cartRoot.querySelectorAll("[data-remove-uid]").forEach(btn=>btn.addEventListener("click",()=>removeInstanceByUid(parseInt(btn.dataset.removeUid))));
         cartRoot.querySelectorAll(".ingredient-tag").forEach(btn=>btn.addEventListener("click",()=>toggleIngredientInstance(parseInt(btn.dataset.uid), btn.dataset.ingredient)));
+        cartRoot.querySelectorAll("[data-viande-uid]").forEach(btn=>btn.addEventListener("click",()=>{
+            selectViandeForInstance(parseInt(btn.dataset.viandeUid), btn.dataset.viandeVal);
+        }));
         subtotalValue.textContent=euro(total);totalValue.textContent=euro(total);
     }
 
@@ -718,14 +760,29 @@
         const phone = fd.get("phone");
         const notes = fd.get("notes") || "";
 
-        // Préparer les articles pour Stripe
+        // Vérifier que tous les sandwichs/wings ont un choix de viande
+        const allItems = getAllItems();
+        const missingViande = cartInstances.find(inst => {
+            const item = allItems.find(i=>i.id===inst.itemId);
+            return item?.sandwich && !inst.viande;
+        });
+        if(missingViande){
+            const item = allItems.find(i=>i.id===missingViande.itemId);
+            setFeedback(`Choisis une option pour : ${item?.name}`, "error");
+            document.getElementById("cartCard").scrollIntoView({behavior:"smooth",block:"start"});
+            return;
+        }
+
+        // Préparer les articles avec prix dynamique (extras viande)
         const items = cartInstances.map(inst => {
             const item = getAllItems().find(i => i.id === inst.itemId);
+            const extra = getViandeExtra(inst.viande);
+            const finalPrice = item.price + extra;
             return {
                 name: item.name,
-                price: item.price,
+                price: finalPrice,
                 quantity: 1,
-                lineTotal: item.price,
+                lineTotal: finalPrice,
                 removed: inst.removed,
                 viande: inst.viande || null
             };

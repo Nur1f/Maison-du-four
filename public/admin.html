@@ -84,7 +84,7 @@
         .btn-refresh:hover { transform: translateY(-2px); }
 
         /* KPI */
-        .kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 22px; }
+        .kpi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 22px; }
         .kpi-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 20px; }
         .kpi-number { display: block; font-family: var(--serif); font-size: 36px; font-weight: 700; color: var(--gold-soft); }
         .kpi-label { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
@@ -189,11 +189,11 @@
         .switch input:checked + .switch-track::after { transform: translateX(20px); background: #73db9a; }
         .stock-loading { padding: 30px; text-align: center; color: var(--muted); font-size: 13px; }
 
-        @media (max-width: 980px) { .kpi-grid { grid-template-columns: repeat(2,1fr); } }
+        @media (max-width: 980px) { .kpi-grid { grid-template-columns: repeat(3,1fr); } }
         @media (max-width: 720px) {
             .admin-topbar { flex-direction: column; align-items: stretch; }
             .btn-refresh { width: 100%; justify-content: center; }
-            .kpi-grid { grid-template-columns: repeat(2,1fr); }
+            .kpi-grid { grid-template-columns: repeat(3,1fr); }
             .stock-overlay { padding: 70px 8px 8px; }
         }
     </style>
@@ -314,14 +314,12 @@
 
     // ─── GESTION VENDU AVEC COUNTDOWN ────────────────────────────────────────
     const pendingVendu = {}; // { firebaseId: { timeout, interval, seconds } }
-    let venduCount = 0; // compteur local des vendus du jour, indépendant de Firebase
 
     function renderStats(orders){
         statsRoot.innerHTML=[
             {label:"Total commandes", value:orders.length},
             {label:"Nouvelles",        value:orders.filter(o=>o.status==="nouvelle").length},
             {label:"Prêtes",           value:orders.filter(o=>o.status==="prete").length},
-            {label:"Vendus aujourd'hui",value:venduCount + Object.keys(pendingVendu).length}
         ].map(s=>`<div class="kpi-card"><span class="kpi-number">${s.value}</span><span class="kpi-label">${s.label}</span></div>`).join("");
     }
 
@@ -355,7 +353,6 @@
         pendingVendu[firebaseId].timeout = setTimeout(async ()=>{
             clearInterval(pendingVendu[firebaseId].interval);
             delete pendingVendu[firebaseId];
-            venduCount++; // +1 vendu confirmé définitif
             try{
                 await deleteDoc(doc(db,"commandes",firebaseId)); // supprime de Firebase
             }catch(err){ alert("Erreur : "+err.message); }
